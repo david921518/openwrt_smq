@@ -78,6 +78,14 @@ return view.extend({
 		o.default = '/mnt';
 		o.rmempty = false;
 
+		o = s.option(form.Value, 'ssl_cert', _('SSL certificate path'));
+		o.default = '';
+		o.rmempty = false;
+
+		o = s.option(form.Value, 'ssl_key', _('SSL key path'));
+		o.default = '';
+		o.rmempty = false;
+
 		o = s.option(form.Flag, 'disable_exec', _('Disable Command Runner feature'));
 		o.default = o.enabled;
 		o.rmempty = false;
