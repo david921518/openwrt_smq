@@ -22,11 +22,12 @@ function getServiceStatus() {
 	});
 }
 
-function renderStatus(isRunning, port) {
+function renderStatus(isRunning, port, scheme) {
 	var spanTemp = '<span style="color:%s"><strong>%s %s</strong></span>';
 	var renderHTML;
 	if (isRunning) {
-		var button = String.format('&#160;<a class="btn cbi-button" href="http://%s:%s" target="_blank" rel="noreferrer noopener">%s</a>',
+		var button = String.format('&#160;<a class="btn cbi-button" href="%s://%s:%s" target="_blank" rel="noreferrer noopener">%s</a>',
+			scheme,
 			window.location.hostname, port, _('Open Web Interface'));
 		renderHTML = spanTemp.format('green', _('FileBrowser'), _('RUNNING')) + button + "<span> 默认用户名与密码:admin</span>" ;
 	} else {
@@ -44,6 +45,7 @@ return view.extend({
 	render: function(data) {
 		var m, s, o;
 		var webport = (uci.get(data, 'config', 'listen_port') || '8989');
+		var scheme = (uci.get(data, 'config', 'scheme') || 'http');
 
 		m = new form.Map('filebrowser', _('FileBrowser'),
 			_('FileBrowser provides a file managing interface within a specified directory and it can be used to upload, delete, preview, rename and edit your files..'));
@@ -54,7 +56,7 @@ return view.extend({
 			poll.add(function () {
 				return L.resolveDefault(getServiceStatus()).then(function (res) {
 					var view = document.getElementById('service_status');
-					view.innerHTML = renderStatus(res, webport);
+					view.innerHTML = renderStatus(res, webport, scheme);
 				});
 			});
 
@@ -84,6 +86,10 @@ return view.extend({
 
 		o = s.option(form.Value, 'ssl_key', _('SSL key path'));
 		o.default = '';
+		o.rmempty = false;
+
+		o = s.option(form.Value, 'scheme', _('HTTP / HTTPS'));
+		o.default = 'http';
 		o.rmempty = false;
 
 		o = s.option(form.Flag, 'disable_exec', _('Disable Command Runner feature'));
